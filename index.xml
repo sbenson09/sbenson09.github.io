@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sean Benson: Pentesting Lab Write Ups</title>
+    <link>https://sbenson09.github.io/</link>
+    <description>Recent content on Sean Benson: Pentesting Lab Write Ups</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>© Sean Benson</copyright>
+    <lastBuildDate>Tue, 15 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://sbenson09.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Paper</title>
+      <link>https://sbenson09.github.io/posts/paper/</link>
+      <pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://sbenson09.github.io/posts/paper/</guid>
+      <description>For this writeup, I will cover my experience on the HackTheBox machine Paper, a Linux system with a rating of Easy.
+Enumeration To begin, I run a quick nmap scan against the host to identify any services of interest.
+kali@kali:~$ nmap 10.10.11.143 Starting Nmap 7.92 ( https://nmap.org ) at 2022-03-15 23:16 EDT Nmap scan report for office.paper (10.10.11.143) Host is up (0.081s latency). Not shown: 997 closed tcp ports (conn-refused) PORT STATE SERVICE 22/tcp open ssh 80/tcp open http 443/tcp open https Nmap done: 1 IP address (1 host up) scanned in 10.</description>
+    </item>
+    
+    <item>
+      <title>RoboSource</title>
+      <link>https://sbenson09.github.io/posts/robosource/</link>
+      <pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://sbenson09.github.io/posts/robosource/</guid>
+      <description>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel dui nunc. Cras id nisl faucibus, ornare leo ut, tincidunt lectus. Donec gravida turpis urna, ac vehicula leo ultricies ut. Phasellus ac dignissim lectus. Etiam sed metus gravida, eleifend augue ut, accumsan massa. Fusce vulputate erat nisi, elementum hendrerit leo blandit vitae. Suspendisse eget sodales neque. Maecenas vehicula hendrerit efficitur.
+ Advertisement :)
+ pica - high quality and fast image resize in browser.</description>
+    </item>
+    
+    <item>
+      <title>Hugo shortcodes</title>
+      <link>https://sbenson09.github.io/posts/test/</link>
+      <pubDate>Sun, 18 Mar 2018 12:13:36 +0530</pubDate>
+      
+      <guid>https://sbenson09.github.io/posts/test/</guid>
+      <description>Images  Dave Herring    Dave Herring   Github Gist  Youtube video   Tweet Hugo 0.24 Released: Big archetype update + @Netlify _redirects etc. file supporthttps://t.co/X94FmYDEZJ #gohugo #golang @spf13 @bepsays
+&amp;mdash; GoHugo.io (@GoHugoIO) June 21, 2017  Vimeo   Callouts ⚡️ I guess this works   </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://sbenson09.github.io/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sbenson09.github.io/about/</guid>
+      <description>👋 Hi, I’m Sean Benson! About me I&amp;rsquo;m currently Security Operations Manager at Cruise, and before that, I was a Senior Vulnerability Management Engineer at both Cruise and Salesforce.
+I spend a lot of time thinking how to build the most mature and effective Security programs.
+I’m interested in Security, 日本語, analog photography, and weightlifting. I’m currently learning pentesting, Japanese, and how to be a manager.
+The best way to contact me is to reach out over LinkedIn.</description>
+    </item>
+    
+  </channel>
+</rss>
