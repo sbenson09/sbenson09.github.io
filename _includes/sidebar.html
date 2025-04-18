@@ -1,0 +1,48 @@
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1>
+        <a href="{{ site.baseurl }}/">
+          {{ site.title }}
+        </a>
+      </h1>
+      <p class="lead">{{ site.description }}</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      {% assign home_url = site.baseurl | append: "/" %}
+      {% assign home_index = site.baseurl | append: "/index.html" %}
+      
+      <a class="sidebar-nav-item
+         {% if page.url == home_url or page.url == home_index %}
+           active
+         {% endif %}"
+         href="{{ home_url }}">
+        Home
+      </a>
+
+      {% comment %}
+        The code below dynamically generates a sidebar nav of pages with
+        `layout: page` in the front-matter. See readme for usage.
+      {% endcomment %}
+
+      {% assign pages_list = site.pages %}
+      {% for node in pages_list %}
+        {% comment %}
+          Skip the home page if it shares a layout or has the same URL as the index
+        {% endcomment %}
+        {% if node.title and node.layout == "page" and node.url != "/" and node.url != "/index.html" %}
+          <a class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}" href="{{ node.url }}">
+            {{ node.title }}
+          </a>
+        {% endif %}
+      {% endfor %}
+      
+      <a class="sidebar-nav-item" href="{{ '/feed.xml' | relative_url }}">RSS</a>
+      <a class="sidebar-nav-item" href="{{ site.linkedin }}">LinkedIn</a>
+      <a class="sidebar-nav-item" href="{{ site.github }}">GitHub</a>
+    </nav>
+
+    <p>&copy; {{ site.time | date: '%Y' }}. All rights reserved.</p>
+  </div>
+</div>

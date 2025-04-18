@@ -1,0 +1,25 @@
+# Dependencies
+markdown:         redcarpet
+highlighter:      pygments
+
+# Permalinks
+permalink:        pretty
+
+# Setup
+title:            Sean's blog
+tagline:          'A blog about nothing' 
+description:      'Capturing my work as a security engineer.'
+url:              https://sbenson09.github.io
+baseurl:          ""
+
+author:
+  name:           'Sean Benson'
+  url:            https://linkedin.com/in/seanmbenson/
+
+paginate:         5
+
+# Custom vars
+version:         0.0.1
+
+github:          https://github.com/sbenson09/sbenson09.github.io
+linkedin:        https://linkedin.com/in/seanmbenson/
