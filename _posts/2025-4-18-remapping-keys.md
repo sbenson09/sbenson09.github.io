@@ -7,13 +7,13 @@ Like most people, I'm particular about what's on my desk, and all of my various 
 
 I prefer a pretty spartan setup: a mouse, a keyboard, my computers, and that's about it. Even then, most things are minimal and out of the way. In this vein, my keyboard of choice for this desk is the [Apple Magic Keyboard](https://www.apple.com/shop/product/MXCL3LL/A/magic-keyboard-usb-c-us-english), although I only have the Lightning version. 
 
-![desktop](https://hackmd.io/_uploads/HJxwTSlJxl.jpg)
+![desktop](/assets/_posts/2025-04-18-remapping-keys/desktop.jpeg)
 
 This keyboard is great for my purposes, although I can understand why it might not be others' cup of tea. However, one minor gripe I have is that there is no right control key on the keyboard. This is pretty annoying, because since I mouse with my left hand, I typically rely heavily on the right-side control key for switching desktops in macOS. And given that I never use the right option key, it makes a great candidate for mapping to the right control button.
 
 Sadly, Apple *does* provide a means of mapping modifier keys, but they aren't specific to individual keys, meaning I can only map *both* option keys, or none.
 
-![keyboard_remapping](https://hackmd.io/_uploads/SJ6IYVgJlg.png)
+![keyboard_remapping_preferences](/assets/_posts/2025-04-18-remapping-keys/keyboard_remapping.png)
 
 For things like this in the past, I used [Karabiner-Elements](https://karabiner-elements.pqrs.org/), which always worked well, but was definitely way overkill for my needs. This time, I wanted something a little simpler, and something that I'd be able to run across my work computer without requiring a new [Santa](https://github.com/northpolesec/santa) (binary authorization) allowlist rule or a [system extension](https://karabiner-elements.pqrs.org/docs/getting-started/installation/#allow-system-software-which-provides-virtual-devices-for-karabiner-elements).
 
