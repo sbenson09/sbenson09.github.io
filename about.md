@@ -15,9 +15,9 @@ This blog is where I share ideas, notes, and things I’ve learned from the secu
 
 You’ll usually find me:
 
-- 🏋️ lifting weights  
-- 📸 taking photos  
-- 🗾 studying Japanese  
+- 🏋️ lifting weights
+- 📸 taking photos
+- 🗾 studying Japanese
 - 🚶‍♂️ going on long walks to nowhere in particular
 
 Thanks for stopping by! Feel free to [reach out via email](mailto:sbenson@hey.com) if you ever want to say hello.
