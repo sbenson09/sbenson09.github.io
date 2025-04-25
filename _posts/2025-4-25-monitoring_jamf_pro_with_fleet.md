@@ -129,10 +129,6 @@ Once we detect a broken jamf agent, we need to actually fix it. To do this, we'v
 
 We run this script manually, as running it automatically would mean exposure of our API credentials on our endpoints, which we want to avoid.
 
-# Conclusion
-
-This approach has been working well for us as a lightweight safety net around Jamf’s self-awareness gap. It’s simple, low-risk, and integrates seamlessly with our existing observability in Fleet.
-
 ## Other Considerations
 
 #### Isn't last check-in already present in Jamf Pro's web UI?
@@ -160,3 +156,7 @@ When I developed this process, it wasn't clear to me that there was a common roo
 Using Fleet's policy automations, we could automatically deploy this script locally, and accept the risk of an exposed API credentials. If we scope the permissions of the credentials to a very limited set, the risk is pretty low.
 
 As an alternative, we could leverage Fleet's policy automations to instead fire a webhook, which could trigger a cloud function to run the self-heal script instead. Doing things this way would help us keep the API token from being exposed on endpoints.
+
+# Conclusion
+
+This approach has been working well for us as a lightweight safety net around Jamf’s self-awareness gap. It’s simple, low-risk, and integrates seamlessly with our existing observability in Fleet.
