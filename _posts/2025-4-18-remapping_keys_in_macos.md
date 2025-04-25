@@ -5,7 +5,7 @@ title: Re-mapping keys in macOS
 
 Like most people, I'm particular about what's on my desk, and all of my various tweaks, macros, etc. that I use to make my time working comfortable and productive.
 
-I prefer a pretty spartan setup: a mouse, a keyboard, my computers, and that's about it. Even then, most things are minimal and out of the way. In this vein, my keyboard of choice for this desk is the [Apple Magic Keyboard](https://www.apple.com/shop/product/MXCL3LL/A/magic-keyboard-usb-c-us-english), although I only have the Lightning version. 
+I prefer a pretty spartan setup: a mouse, a keyboard, my computers, and that's about it. Even then, most things are minimal and out of the way. In this vein, my keyboard of choice for this desk is the [Apple Magic Keyboard](https://www.apple.com/shop/product/MXCL3LL/A/magic-keyboard-usb-c-us-english).
 
 ![Photo of desktop](/assets/posts/2025-4-18-remapping-keys/desktop.jpeg)
 
@@ -17,7 +17,7 @@ Sadly, Apple *does* provide a means of mapping modifier keys, but they aren't sp
 
 For things like this in the past, I used [Karabiner-Elements](https://karabiner-elements.pqrs.org/), which always worked well, but was definitely way overkill for my needs. This time, I wanted something a little simpler, and something that I'd be able to run across my work computer without requiring a new [Santa](https://github.com/northpolesec/santa) (binary authorization) allowlist rule or a [system extension](https://karabiner-elements.pqrs.org/docs/getting-started/installation/#allow-system-software-which-provides-virtual-devices-for-karabiner-elements).
 
-Fortunately, Apple provides a way to do exactly that. From a [technical note from 2017](https://developer.apple.com/library/archive/technotes/tn2450/_index.html):
+Fortunately, Apple provides an option that fits the bill. From a [technical note written in 2017](https://developer.apple.com/library/archive/technotes/tn2450/_index.html):
 > This Technical Note is for developers of key remapping software so that they can update their software to support macOS Sierra 10.12. We present 2 solutions for implementing key remapping functionality for macOS 10.12 in this Technical Note.
 
 
