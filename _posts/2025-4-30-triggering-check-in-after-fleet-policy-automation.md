@@ -18,7 +18,7 @@ While this works well enough, the mean time-to-detect and time-to-remediate tend
 In practice, it can end up taking up to two days before a given deviation is detected and remediated.
 
 
-# Doing things with Fleet
+## Doing things with Fleet
 
 We've been using [Fleet](https://fleetdm.com/), and have begun evaluating their Premium offering. One of the features in Premium is the ability to run [automations](https://fleetdm.com/guides/automations#policy-automations) upon the detection of a failing policy. Of particular interest to us, is the ability for it to run a script automatically. Much like how Jamf's policy works, we can use this to remediate deviations.
 
